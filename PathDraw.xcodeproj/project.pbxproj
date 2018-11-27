@@ -12,7 +12,12 @@
 		2910CE8821A1CC67002D55AC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2910CE8621A1CC67002D55AC /* Main.storyboard */; };
 		2910CE9521A1CD15002D55AC /* UIKitHelp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2910CE9421A1CD15002D55AC /* UIKitHelp.framework */; };
 		2910CE9621A1CD15002D55AC /* UIKitHelp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2910CE9421A1CD15002D55AC /* UIKitHelp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2941ECF821AB5E9C00705362 /* CounterExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2941ECF721AB5E9C00705362 /* CounterExample.swift */; };
+		2955F17D21A9F34C00D1729E /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2955F17C21A9F34C00D1729E /* Utilities.swift */; };
+		2955F17F21A9F4D000D1729E /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2955F17E21A9F4D000D1729E /* AppState.swift */; };
+		2955F18121AA011B00D1729E /* LineRenderingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2955F18021AA011B00D1729E /* LineRenderingView.swift */; };
 		29F13A9021A3BA7F00C4C586 /* ControlsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F13A8F21A3BA7F00C4C586 /* ControlsVC.swift */; };
+		9DA0E1E53D3D72250754BB13 /* Pods_PathDraw.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B09CAE9ECFC346C55E00E698 /* Pods_PathDraw.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -36,7 +41,14 @@
 		2910CE8721A1CC67002D55AC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2910CE8E21A1CC69002D55AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2910CE9421A1CD15002D55AC /* UIKitHelp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = UIKitHelp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2941ECF721AB5E9C00705362 /* CounterExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterExample.swift; sourceTree = "<group>"; };
+		2955F17C21A9F34C00D1729E /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		2955F17E21A9F4D000D1729E /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		2955F18021AA011B00D1729E /* LineRenderingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineRenderingView.swift; sourceTree = "<group>"; };
 		29F13A8F21A3BA7F00C4C586 /* ControlsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlsVC.swift; sourceTree = "<group>"; };
+		88AA94397857F0E56FAB7968 /* Pods-PathDraw.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PathDraw.release.xcconfig"; path = "Pods/Target Support Files/Pods-PathDraw/Pods-PathDraw.release.xcconfig"; sourceTree = "<group>"; };
+		B09CAE9ECFC346C55E00E698 /* Pods_PathDraw.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PathDraw.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B98ACFF1CC00712B765360AD /* Pods-PathDraw.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PathDraw.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PathDraw/Pods-PathDraw.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,6 +57,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2910CE9521A1CD15002D55AC /* UIKitHelp.framework in Frameworks */,
+				9DA0E1E53D3D72250754BB13 /* Pods_PathDraw.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -57,6 +70,8 @@
 				2910CE9421A1CD15002D55AC /* UIKitHelp.framework */,
 				2910CE8121A1CC67002D55AC /* PathDraw */,
 				2910CE8021A1CC67002D55AC /* Products */,
+				9BFD620D42F01F8D300CC6CE /* Pods */,
+				56107E331422E4A27925E6DB /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -73,11 +88,32 @@
 			children = (
 				2910CE8221A1CC67002D55AC /* AppDelegate.swift */,
 				2910CE8421A1CC67002D55AC /* ViewController.swift */,
+				29F13A8F21A3BA7F00C4C586 /* ControlsVC.swift */,
 				2910CE8621A1CC67002D55AC /* Main.storyboard */,
 				2910CE8E21A1CC69002D55AC /* Info.plist */,
-				29F13A8F21A3BA7F00C4C586 /* ControlsVC.swift */,
+				2955F17C21A9F34C00D1729E /* Utilities.swift */,
+				2955F17E21A9F4D000D1729E /* AppState.swift */,
+				2955F18021AA011B00D1729E /* LineRenderingView.swift */,
+				2941ECF721AB5E9C00705362 /* CounterExample.swift */,
 			);
 			path = PathDraw;
+			sourceTree = "<group>";
+		};
+		56107E331422E4A27925E6DB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B09CAE9ECFC346C55E00E698 /* Pods_PathDraw.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		9BFD620D42F01F8D300CC6CE /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				B98ACFF1CC00712B765360AD /* Pods-PathDraw.debug.xcconfig */,
+				88AA94397857F0E56FAB7968 /* Pods-PathDraw.release.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -87,10 +123,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2910CE9121A1CC69002D55AC /* Build configuration list for PBXNativeTarget "PathDraw" */;
 			buildPhases = (
+				551C64B76361256638546D03 /* [CP] Check Pods Manifest.lock */,
 				2910CE7B21A1CC67002D55AC /* Sources */,
 				2910CE7C21A1CC67002D55AC /* Frameworks */,
 				2910CE7D21A1CC67002D55AC /* Resources */,
 				2910CE9721A1CD15002D55AC /* Embed Frameworks */,
+				102B8BEDA122B90D3B2D0218 /* [CP] Embed Pods Frameworks */,
+				31537B8FCB3777A1C28535C1 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -145,13 +184,77 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		102B8BEDA122B90D3B2D0218 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-PathDraw/Pods-PathDraw-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/RxAtomic/RxAtomic.framework",
+				"${BUILT_PRODUCTS_DIR}/RxCocoa/RxCocoa.framework",
+				"${BUILT_PRODUCTS_DIR}/RxFeedback/RxFeedback.framework",
+				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxAtomic.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxCocoa.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxFeedback.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PathDraw/Pods-PathDraw-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		31537B8FCB3777A1C28535C1 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PathDraw/Pods-PathDraw-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		551C64B76361256638546D03 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-PathDraw-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		2910CE7B21A1CC67002D55AC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2941ECF821AB5E9C00705362 /* CounterExample.swift in Sources */,
 				29F13A9021A3BA7F00C4C586 /* ControlsVC.swift in Sources */,
+				2955F18121AA011B00D1729E /* LineRenderingView.swift in Sources */,
+				2955F17F21A9F4D000D1729E /* AppState.swift in Sources */,
 				2910CE8521A1CC67002D55AC /* ViewController.swift in Sources */,
+				2955F17D21A9F34C00D1729E /* Utilities.swift in Sources */,
 				2910CE8321A1CC67002D55AC /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -288,10 +391,13 @@
 		};
 		2910CE9221A1CC69002D55AC /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B98ACFF1CC00712B765360AD /* Pods-PathDraw.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2A7A6XU69G;
 				INFOPLIST_FILE = PathDraw/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -305,10 +411,13 @@
 		};
 		2910CE9321A1CC69002D55AC /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 88AA94397857F0E56FAB7968 /* Pods-PathDraw.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2A7A6XU69G;
 				INFOPLIST_FILE = PathDraw/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

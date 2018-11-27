@@ -5,6 +5,9 @@
       location = "group:../frameworks/uikit-kit/uikit-kit.xcodeproj">
    </FileRef>
    <FileRef
-      location = "container:PathDraw.xcodeproj">
+      location = "group:Pods/Pods.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:PathDraw.xcodeproj">
    </FileRef>
 </Workspace>

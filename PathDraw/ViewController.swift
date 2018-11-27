@@ -9,6 +9,9 @@
 import UIKit
 import MapKit
 import UIKitHelp
+import RxSwift
+import RxCocoa
+import RxFeedback
 
 class ViewController: UIViewController {
     
@@ -18,45 +21,79 @@ class ViewController: UIViewController {
     
     var points = [CGPoint]()
     
+    private let appState: AppState
+    
+    let controlsVC = ControlsVC()
+    
+    var temporaryLineRender: LineRenderingView!
+    
+    init(appState: AppState) {
+        self.appState = appState
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError()
+    }
+    
+    let pan = UIPanGestureRecognizer()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        mapView.pinTo(superView: view)
-
-        mapView.delegate = self
-
-        let controlsVC = ControlsVC()
-
+     
+        // setup controls view
+        
         addChild(controlsVC)
         
         view.addSubview(controlsVC.view)
         
         controlsVC.view.translatesAutoresizingMaskIntoConstraints = false
         controlsVC.view.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        controlsVC.view.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8).isActive = true
+        controlsVC.view.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 1).isActive = true
         controlsVC.view.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.2).isActive = true
         controlsVC.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         
         controlsVC.didMove(toParent: self)
-        
-    }
-    
-    @objc private func pressed(r: UILongPressGestureRecognizer) {
 
-        switch r.state {
-        case .began:
-            let isEnabled = mapView.isScrollEnabled
-            mapView.isScrollEnabled = !isEnabled
-        default:
-            break
-        }
+        // set map view
+        view.addSubview(mapView)
+        
+        mapView.translatesAutoresizingMaskIntoConstraints = false
+        mapView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        mapView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 1).isActive = true
+        mapView.topAnchor.constraint(equalTo: controlsVC.view.bottomAnchor).isActive = true
+        
+        mapView.delegate = self
+        
+        // line renderer
+        temporaryLineRender = LineRenderingView(appState: appState)
+        
+        view.addSubview(temporaryLineRender)
+        
+        temporaryLineRender.translatesAutoresizingMaskIntoConstraints = false
+        
+        temporaryLineRender.leftAnchor.constraint(equalTo: mapView.leftAnchor).isActive = true
+        temporaryLineRender.rightAnchor.constraint(equalTo: mapView.rightAnchor).isActive = true
+        temporaryLineRender.topAnchor.constraint(equalTo: mapView.topAnchor).isActive = true
+        temporaryLineRender.bottomAnchor.constraint(equalTo: mapView.bottomAnchor).isActive = true
+        
+        view.addGestureRecognizer(pan)
+        
+        controlsVC.system.subscribe(onNext: { state in
+            
+            self.mapView.isScrollEnabled = !state.isDrawingPath
+        })
+        
+        system.subscribe(onNext: { state in
+            print(state)
+        })
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        
-        
         zoomToManhattan()
-        
     }
     
     func zoomToManhattan() {
@@ -75,66 +112,59 @@ class ViewController: UIViewController {
         )
     }
     
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        print(self.view.constraints.count)
-
+    var isDrawingPath = false {
+        didSet {
+            temporaryLineRender.isVisible = isDrawingPath
+        }
+    }
+ 
+    struct State {
+        var points = [CGPoint]()
     }
     
+    enum Mutation {
+        case startPath(CGPoint)
+        case addPoint(CGPoint)
+    }
     
-
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-
-        if let overlay = self.drawnOverLay {
-            mapView.removeOverlay(overlay)
-        }
-
-        points.removeAll()
-
-        if let loc = touches.first?.location(in: self.view) {
-            points.append(loc)
-        }
-    }
-
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-
-        if let loc = touches.first?.location(in: self.view) {
-            points.append(loc)
-        }
-    }
-
-
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-
-        let coords = coordinates(from: points, in: mapView)
-        let line = MKPolyline.init(points: coords, count: coords.count)
-
-        self.drawnOverLay = line
-
-        mapView.addOverlay(line)
-
-        distance()
-    }
-
-    func distance() {
-
-        let coords = points.map { mapView.convert($0, toCoordinateFrom: mapView) }
-
-        var dist: CLLocationDistance = 0
-
-        for cs in zip(coords, coords.dropFirst()) {
-
-            let a = CLLocation.init(latitude: cs.0.latitude, longitude: cs.0.longitude)
-            let b = CLLocation.init(latitude: cs.1.latitude, longitude: cs.1.longitude)
-
-            let c = a.distance(from: b)
-
-            dist += c
-        }
-
-        print(dist / 1609)
+    var system: Observable<State> {
+        return Observable<Any>.system(
+            initialState: State(),
+            reduce: { (state, mutation) -> State in
+                
+                switch mutation {
+                case .startPath(let point):
+                    return State.init(points: [point])
+                case .addPoint(let point):
+                    return State(points: state.points + [point])
+                }
+        },
+            scheduler: MainScheduler.instance,
+            scheduledFeedback: bind(self) { (me, state) -> Bindings<Mutation> in
+                
+                let muts: [Observable<Mutation>] = [
+                    me.pan.rx.event
+                        .filter { return $0.state == UIGestureRecognizer.State.began }
+                        .map { event in
+                            let point = event.location(in: me.view)
+                            return Mutation.startPath(point)
+                    },
+                    me.pan.rx.event
+                        .filter { return $0.state == UIGestureRecognizer.State.changed }
+                        .map { event in
+                            let point = event.location(in: me.view)
+                            return Mutation.addPoint(point)
+                    },
+                ]
+                
+                let subs = [
+                    state.map { $0.points }
+                        .map { String(describing: getDistance(points: $0, mapView: me.mapView)) }
+                        .bind(to: me.controlsVC.displayLabel.rx.text)
+                ]
+                
+                return Bindings(subscriptions: subs, mutations: muts)
+            })
     }
 }
 
@@ -144,22 +174,11 @@ extension ViewController: MKMapViewDelegate {
 
         if overlay is MKPolyline {
             let r = MKPolylineRenderer(overlay: overlay)
-            r.strokeColor = .red
-            r.lineWidth = 5
+            r.strokeColor = appState.lineRenderingColor
+            r.lineWidth = appState.lineRenderingStrokeWidth
             return r
         }
 
         fatalError()
     }
 }
-
-
-extension ViewController {
-
-    func coordinates(from cgpoints: [CGPoint], in mapview: MKMapView) -> [MKMapPoint] {
-        return cgpoints
-            .map { mapview.convert($0, toCoordinateFrom: mapview) }
-            .map(MKMapPoint.init)
-    }
-}
-

@@ -1,0 +1,6 @@
+framework module Pods_PathDraw {
+  umbrella header "Pods-PathDraw-umbrella.h"
+
+  export *
+  module * { export * }
+}
