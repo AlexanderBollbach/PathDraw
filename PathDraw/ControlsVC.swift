@@ -19,66 +19,74 @@ class AppButton: UIButton {
     }
 }
 
+func whiteLabel() -> UILabel {
+    
+    let l = UILabel()
+    l.textAlignment = .center
+    l.textColor = .white
+    return l
+}
+
+class ComputedDataView: UIView {
+    
+    let milesLabel = whiteLabel()
+    let caloriesBurnedLabel = whiteLabel()
+    
+    override init(frame: CGRect) {
+        super.init(frame: .zero)
+        
+        let sv = UIStackView(arrangedSubviews: [milesLabel, caloriesBurnedLabel])
+        sv.axis = .vertical
+        sv.distribution = .fillEqually
+        sv.pinTo(superView: self)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError()
+    }
+    
+    func setMiles(_ miles: Double) {
+        
+        let a = Double(round(100 * miles) / 100)
+        let b = "\(String.init(describing: a)) miles"
+        
+        milesLabel.text = b
+    }
+    
+    func setCalories(_ calories: Double) {
+        
+        caloriesBurnedLabel.text = "\(calories)"
+    }
+}
+
 class ControlsVC: UIViewController {
-    
-    struct State {
-        var isDrawingPath: Bool
-    }
-    
-    enum Mutation {
-        case toggleDrawingPath
-    }
     
     lazy var drawPathButton: UIButton = {
         let b = AppButton()
         b.setTitle("Draw Path", for: .normal)
-        b.pinTo(superView: view)
         return b
     }()
     
-    let displayLabel: UILabel = {
-        let l = UILabel()
-        l.textColor = .white
-        l.textAlignment = .center
-        return l
+    lazy var clearButton: UIButton = {
+        let b = AppButton()
+        b.setTitle("clear path", for: .normal)
+        return b
     }()
+    
+    let computedDataView = ComputedDataView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         view.backgroundColor = .purple
-        
-        let sv = UIStackView(arrangedSubviews: [displayLabel, drawPathButton])
-        
+        let sv = UIStackView(arrangedSubviews: [computedDataView, drawPathButton, clearButton])
         sv.distribution = .fillEqually
-        
         sv.pinTo(superView: view)
+    }
+    
+    var isDrawing = false {
+        didSet {
+            drawPathButton.isSelected = isDrawing
+        }
     }
 }
 
-extension ControlsVC {
-    
-    var system: Observable<ControlsVC.State> {
-        return Observable.system(
-            initialState: State(isDrawingPath: false),
-            reduce: { (state, mutation) -> State in
-                switch mutation {
-                case .toggleDrawingPath:
-                    return State(isDrawingPath: !state.isDrawingPath)
-                }
-        },
-            scheduler: MainScheduler.instance,
-            scheduledFeedback:
-            bind(self) { me, state -> Bindings<Mutation> in
-                return Bindings(
-                    subscriptions: [
-                        state.map { $0.isDrawingPath }.bind(to: me.drawPathButton.rx.isSelected)
-                    ],
-                    mutations: [
-                        me.drawPathButton.rx.tap.map { Mutation.toggleDrawingPath }
-                    ]
-                )
-            }
-        )
-    }
-}

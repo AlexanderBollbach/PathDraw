@@ -12,10 +12,9 @@
 		2910CE8821A1CC67002D55AC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2910CE8621A1CC67002D55AC /* Main.storyboard */; };
 		2910CE9521A1CD15002D55AC /* UIKitHelp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2910CE9421A1CD15002D55AC /* UIKitHelp.framework */; };
 		2910CE9621A1CD15002D55AC /* UIKitHelp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2910CE9421A1CD15002D55AC /* UIKitHelp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		2941ECF821AB5E9C00705362 /* CounterExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2941ECF721AB5E9C00705362 /* CounterExample.swift */; };
 		2955F17D21A9F34C00D1729E /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2955F17C21A9F34C00D1729E /* Utilities.swift */; };
-		2955F17F21A9F4D000D1729E /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2955F17E21A9F4D000D1729E /* AppState.swift */; };
 		2955F18121AA011B00D1729E /* LineRenderingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2955F18021AA011B00D1729E /* LineRenderingView.swift */; };
+		296DF6BF21B8B9E600CCB845 /* ManagedMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 296DF6BE21B8B9E600CCB845 /* ManagedMapView.swift */; };
 		29F13A9021A3BA7F00C4C586 /* ControlsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F13A8F21A3BA7F00C4C586 /* ControlsVC.swift */; };
 		9DA0E1E53D3D72250754BB13 /* Pods_PathDraw.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B09CAE9ECFC346C55E00E698 /* Pods_PathDraw.framework */; };
 /* End PBXBuildFile section */
@@ -41,10 +40,9 @@
 		2910CE8721A1CC67002D55AC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2910CE8E21A1CC69002D55AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2910CE9421A1CD15002D55AC /* UIKitHelp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = UIKitHelp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		2941ECF721AB5E9C00705362 /* CounterExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterExample.swift; sourceTree = "<group>"; };
 		2955F17C21A9F34C00D1729E /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
-		2955F17E21A9F4D000D1729E /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		2955F18021AA011B00D1729E /* LineRenderingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineRenderingView.swift; sourceTree = "<group>"; };
+		296DF6BE21B8B9E600CCB845 /* ManagedMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedMapView.swift; sourceTree = "<group>"; };
 		29F13A8F21A3BA7F00C4C586 /* ControlsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlsVC.swift; sourceTree = "<group>"; };
 		88AA94397857F0E56FAB7968 /* Pods-PathDraw.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PathDraw.release.xcconfig"; path = "Pods/Target Support Files/Pods-PathDraw/Pods-PathDraw.release.xcconfig"; sourceTree = "<group>"; };
 		B09CAE9ECFC346C55E00E698 /* Pods_PathDraw.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PathDraw.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -92,9 +90,8 @@
 				2910CE8621A1CC67002D55AC /* Main.storyboard */,
 				2910CE8E21A1CC69002D55AC /* Info.plist */,
 				2955F17C21A9F34C00D1729E /* Utilities.swift */,
-				2955F17E21A9F4D000D1729E /* AppState.swift */,
 				2955F18021AA011B00D1729E /* LineRenderingView.swift */,
-				2941ECF721AB5E9C00705362 /* CounterExample.swift */,
+				296DF6BE21B8B9E600CCB845 /* ManagedMapView.swift */,
 			);
 			path = PathDraw;
 			sourceTree = "<group>";
@@ -196,6 +193,7 @@
 				"${BUILT_PRODUCTS_DIR}/RxCocoa/RxCocoa.framework",
 				"${BUILT_PRODUCTS_DIR}/RxFeedback/RxFeedback.framework",
 				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/RxSwiftExt/RxSwiftExt.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -203,6 +201,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxCocoa.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxFeedback.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwiftExt.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -249,13 +248,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2941ECF821AB5E9C00705362 /* CounterExample.swift in Sources */,
 				29F13A9021A3BA7F00C4C586 /* ControlsVC.swift in Sources */,
 				2955F18121AA011B00D1729E /* LineRenderingView.swift in Sources */,
-				2955F17F21A9F4D000D1729E /* AppState.swift in Sources */,
 				2910CE8521A1CC67002D55AC /* ViewController.swift in Sources */,
 				2955F17D21A9F34C00D1729E /* Utilities.swift in Sources */,
 				2910CE8321A1CC67002D55AC /* AppDelegate.swift in Sources */,
+				296DF6BF21B8B9E600CCB845 /* ManagedMapView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -398,10 +396,7 @@
 				DEVELOPMENT_TEAM = 2A7A6XU69G;
 				INFOPLIST_FILE = PathDraw/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.alex.PathDraw;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
@@ -418,10 +413,7 @@
 				DEVELOPMENT_TEAM = 2A7A6XU69G;
 				INFOPLIST_FILE = PathDraw/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.alex.PathDraw;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;

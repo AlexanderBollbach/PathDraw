@@ -10,18 +10,12 @@ import UIKit
 
 class LineRenderingView: UIView {
     
-    private let appState: AppState
-    
     private var points = [CGPoint]()
     
-    init(appState: AppState) {
-        self.appState = appState
+    init() {
         super.init(frame: .zero)
-        
         backgroundColor = .clear
-        
         isOpaque = false
-        
         isUserInteractionEnabled = false
     }
     
@@ -46,7 +40,7 @@ class LineRenderingView: UIView {
         
 //        ctx.setStrokeColor(appState.lineRenderingColor.cgColor)
         ctx.setStrokeColor(UIColor.blue.cgColor)
-        ctx.setLineWidth(appState.lineRenderingStrokeWidth)
+        ctx.setLineWidth(5)
         
         ctx.move(to: firstPoint)
         
