@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:../frameworks/node-kit/NodeKitProject.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:../frameworks/uikit-kit/uikit-kit.xcodeproj">
    </FileRef>
    <FileRef

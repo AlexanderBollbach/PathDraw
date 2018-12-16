@@ -1,32 +1,46 @@
-//
-//  ViewController.swift
-//  PathDraw
-//
-//  Created by Alexander Bollbach on 11/18/18.
-//  Copyright © 2018 Alexander Bollbach. All rights reserved.
-//
-
 import UIKit
 import MapKit
 import UIKitHelp
 import RxSwift
 import RxCocoa
-import RxFeedback
 import RxSwiftExt
+import ReSwift
 
+struct NewPathEvent {
+    let points: [MKMapPoint]
+    let isBuilding: Bool
+}
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, StoreSubscriber {
     
-    private let controlsVC = ControlsVC()
-    private let temporaryLineRender = LineRenderingView()
-    private let pan = UIPanGestureRecognizer()
-    private let tap = UITapGestureRecognizer.init()
-    private let managedMapView = ManagedMapView()
+    let controlsVC = ControlsVC()
+    let temporaryLineRender = LineRenderingView()
+    let pan = UIPanGestureRecognizer()
+    let tap = UITapGestureRecognizer.init()
+    let managedMapView = ManagedMapView()
+    private let bag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViews()
-        _ = system.subscribe()
+        bind()
+        
+        store.subscribe(self)
+    }
+    
+    func newState(state: UndoState) {
+        
+        let state = state.present
+        
+        let distance = getDistance(paths: state.paths, mapView: managedMapView.mapview)
+        
+        controlsVC.computedDataView.setMiles(distance)
+        controlsVC.computedDataView.setCalories(distance * 20)
+        
+        managedMapView.mapview.isScrollEnabled = state.editingMode != .drawing
+        controlsVC.isDrawing = state.editingMode == .drawing
+        
+        managedMapView.render(paths: state.paths)
     }
 }
 
@@ -52,149 +66,85 @@ extension ViewController {
         
         [pan, tap].forEach(view.addGestureRecognizer)
     }
-}
-
-
-extension ViewController {
     
-    struct State {
+    func bind() {
         
-        enum EditingMode {
-            case moving
-            case drawing
+        enum PanEvent {
+            case began(MKMapPoint)
+            case changed(MKMapPoint)
+            case ended
         }
-        var paths = [[MKMapPoint]]()
-        var shouldSyncPaths: [[MKMapPoint]]? = nil
         
-        var isDrawing = false
+        let began = pan.rx.event
+            .filter { $0.state == .began }
+            .map { [unowned self] in mapPointFromGestureEvent(rec: $0, mapView: self.managedMapView.mapview, view: self.view) }
+            .map { PanEvent.began($0) }
         
-        var editingMode = EditingMode.moving
+        let changed = pan.rx.event
+            .filter { return $0.state == .changed }
+            .map { [unowned self] in  mapPointFromGestureEvent(rec: $0, mapView: self.managedMapView.mapview, view: self.view) }
+            .map { PanEvent.changed($0) }
         
-        init(paths: [[MKMapPoint]] = [], shouldSyncPaths: [[MKMapPoint]]? = nil) {
-            self.paths = paths
-            self.shouldSyncPaths = shouldSyncPaths
+        let ended = pan.rx.event
+            .filter { $0.state == .ended }
+            .map { _ in PanEvent.ended }
+        
+        let pathUpdates = Observable<PanEvent>
+            .merge(began, changed, ended)
+            .scan(NewPathEvent(points: [], isBuilding: true)) { (pathEvent, panEvent) -> NewPathEvent in
+                
+            switch panEvent {
+            case .began(let point):
+                return NewPathEvent(points: [point], isBuilding: true)
+            case .changed(let point):
+                return NewPathEvent(points: pathEvent.points + [point], isBuilding: true)
+            case .ended:
+                return NewPathEvent(points: pathEvent.points, isBuilding: false)
+            }
         }
-    }
-    
-    enum Mutation {
-        case startPath(MKMapPoint)
-        case addPoint(MKMapPoint)
-        case syncMapStart
-        case syncMapStop
-        case clearPath
-        case setIsDrawing(Bool)
-        case setMode(State.EditingMode)
-    }
-    
-    var system: Observable<State> {
-        return Observable.system(
-            initialState: State(),
-            reduce: { (state, mutation) -> State in
-                
-                switch mutation {
-                    
-                case .startPath(let point):
-                    var state = state
-                    var paths = state.paths
-                    paths.append([point])
-                    state.paths = paths
-                    state.isDrawing = true
-                    return state
-                case .setMode(let val):
-                    var state = state
-                    state.editingMode = val
-                    return state
-                case .addPoint(let point):
-                    var state = state
-                    var paths = state.paths
-                    paths[paths.count - 1].append(point)
-                    state.paths = paths
-                    return state
-                case .syncMapStart:
-                    var state = state
-                    state.shouldSyncPaths = state.paths
-                    state.isDrawing = false
-                    return state
-                case .syncMapStop:
-                    var state = state
-                    state.shouldSyncPaths = nil
-                    return state
-                case .clearPath:
-                    var state = state
-                    state.paths = []
-                    state.shouldSyncPaths = []
-                    return state
-                case .setIsDrawing(let val):
-                    var state = state
-                    state.isDrawing = val
-                    return state
-                }
-        },
-            scheduler: MainScheduler.instance,
-            scheduledFeedback: bind(self) { (me, state) -> Bindings<Mutation> in
-                
-                let muts: [Observable<Mutation>] = [
-                    
-                    me.pan.rx.event
-                        .filter { $0.state == .began }
-                        .map { mapPointFromGestureEvent(rec: $0, mapView: me.managedMapView.mapview, view: me.view) }
-                        .map { Mutation.startPath($0) },
-                    
-                    me.pan.rx.event
-                        .filter { return $0.state == .changed }
-                        .map { mapPointFromGestureEvent(rec: $0, mapView: me.managedMapView.mapview, view: me.view) }
-                        .map { Mutation.addPoint($0) },
-                    
-                    me.controlsVC.clearButton.rx.tap
-                        .map { Mutation.clearPath },
-                    
-                    me.pan.rx.event
-                        .filter { $0.state == .ended }
-                        .map { _ in Mutation.syncMapStart },
-                    
-                    me.controlsVC.drawPathButton.rx.tap.asObservable()
-                        .withLatestFrom(state)
-                        .map {
-                            let newMode = $0.editingMode == State.EditingMode.drawing ? State.EditingMode.moving : State.EditingMode.drawing
-                            return Mutation.setMode(newMode)
-                    }
-                ]
-                
-                let subs = [
-                    
-                    state
-                        .map { $0.paths }
-                        .map { getDistance(paths: $0, mapView: me.managedMapView.mapview) }
-                        .subscribe(onNext: { miles in
-                            me.controlsVC.computedDataView.setMiles(miles)
-                            me.controlsVC.computedDataView.setCalories(miles * 20)
-                        }),
-                    state.map { $0.editingMode }.subscribe(onNext: { mode in
-                        me.temporaryLineRender.isVisible = mode == State.EditingMode.drawing
-                        me.managedMapView.mapview.isScrollEnabled = mode != State.EditingMode.drawing
-                        me.controlsVC.isDrawing = mode == State.EditingMode.drawing
-                    }),
-                    
-                    state.map { $0.paths.last }.subscribe(onNext: { mapPoints in
-                        let points = mapPoints ?? []
-                        let converted = points
-                            .map { $0.coordinate }
-                            .map { me.managedMapView.mapview.convert($0, toPointTo: me.managedMapView.mapview) }
-                        me.temporaryLineRender.render(points: converted)
-                    }),
-                    
-                    state.map { $0.isDrawing }.subscribe(onNext: { isDrawing in
-                      me.temporaryLineRender.isVisible = isDrawing
-                    })
-                ]
-                
-                return Bindings(subscriptions: subs, mutations: muts)
-            },
-            react(query: { return $0.shouldSyncPaths }, effects: { [weak self] foo -> Observable<Mutation> in
-                self?.managedMapView.render(paths: foo)
-                return .just(Mutation.syncMapStop)
-            })
-        )
+        
+        let buildingPath = pathUpdates.filterMap { $0.isBuilding ? .map($0.points) : .ignore }
+        
+        buildingPath.subscribe(onNext: { [unowned self] points in
+            
+            let converted = points
+                .map { CLLocationCoordinate2D.init(latitude: $0.coordinate.latitude, longitude: $0.coordinate.longitude) }
+                .map { self.managedMapView.mapview.convert($0, toPointTo: self.managedMapView.mapview) }
+            
+            self.temporaryLineRender.render(points: converted)
+            
+        }).disposed(by: bag)
+        
+        let newPath = pathUpdates.filterMap { $0.isBuilding ? .ignore : .map($0.points) }
+        
+        newPath.subscribe(onNext: { [unowned self] points in
+            self.temporaryLineRender.render(points: [])
+            store.dispatch(Actions.addPath(path: points))
+        }).disposed(by: bag)
+        
+        controlsVC.events.filter { $0 == .clearPaths }
+            .map { _ in Actions.clearPath() }
+            .bind(to: dispatchObserver)
+            .disposed(by: bag)
+        
+        controlsVC.events.filter { $0 == .toggleDrawMode }
+            .map { _ in
+                return Actions.setMode(
+                    mode: store.state.present.editingMode == .drawing ? .moving : .drawing
+                )
+            }
+            .bind(to: dispatchObserver)
+            .disposed(by: bag)
+        
+        controlsVC.events.filter { $0 == ControlsEvent.undo }
+            .map { _ in Actions.undo() }
+            .bind(to: dispatchObserver)
+            .disposed(by: bag)
+        
+        controlsVC.events.filter { $0 == ControlsEvent.redo }
+            .map { _ in Actions.redo() }
+            .bind(to: dispatchObserver)
+            .disposed(by: bag)
     }
 }
 

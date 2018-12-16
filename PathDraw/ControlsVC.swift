@@ -9,6 +9,7 @@
 import UIKit
 import RxFeedback
 import RxSwift
+import NodeKit
 
 class AppButton: UIButton {
     
@@ -59,6 +60,13 @@ class ComputedDataView: UIView {
     }
 }
 
+enum ControlsEvent {
+    case toggleDrawMode
+    case clearPaths
+    case undo
+    case redo
+}
+
 class ControlsVC: UIViewController {
     
     lazy var drawPathButton: UIButton = {
@@ -75,12 +83,74 @@ class ControlsVC: UIViewController {
     
     let computedDataView = ComputedDataView()
     
+    var events = PublishSubject<ControlsEvent>()
+    
+    private let bag = DisposeBag()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .purple
-        let sv = UIStackView(arrangedSubviews: [computedDataView, drawPathButton, clearButton])
+        
+        let undo = Node(
+            id: 0,
+            isSelected: false,
+            type: Node.NodeType.setItem1(
+                title: "undo",
+                isActive: false,
+                action: { [weak self] in
+                    self?.events.onNext(ControlsEvent.undo)
+                }
+            )
+        )
+        
+        let redo = Node(
+            id: 0,
+            isSelected: false,
+            type: Node.NodeType.setItem1(
+                title: "redo",
+                isActive: false,
+                action: { [weak self] in
+                    self?.events.onNext(ControlsEvent.redo)
+                }
+            )
+        )
+        
+        let undoRedo = Node(
+            id: 0,
+            isSelected: false,
+            type: Node.NodeType.set(
+                turtles: [undo, redo],
+                config: NodeConfig(
+                    layout: NodeConfig.Layout.equalSpacing(axis: .vertical),
+                    supportsSelection: false),
+                onSelected: { _, _ in }
+            )
+        )
+       
+        let sv = UIStackView(
+            arrangedSubviews: [
+                computedDataView,
+                drawPathButton,
+                clearButton,
+                render(turtle: undoRedo)
+            ]
+        )
+        
         sv.distribution = .fillEqually
         sv.pinTo(superView: view)
+        
+        bind()
+    }
+    
+    private func bind() {
+        
+        drawPathButton.rx.tap.map { ControlsEvent.toggleDrawMode }
+            .bind(to: events)
+            .disposed(by: bag)
+        
+        clearButton.rx.tap.map { ControlsEvent.clearPaths }
+            .bind(to: events)
+            .disposed(by: bag)
     }
     
     var isDrawing = false {

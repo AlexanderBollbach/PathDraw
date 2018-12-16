@@ -21,7 +21,15 @@ class ManagedMapView: NSObject, MKMapViewDelegate {
         mapview.zoomToManhattan()
     }
     
+    var cachedPaths = [[MKMapPoint]]()
+    
     func render(paths: [[MKMapPoint]]) {
+        
+        if paths == cachedPaths {
+            return
+        }
+        
+        cachedPaths = paths
         
         mapview.removeOverlays(mapview.overlays)
         

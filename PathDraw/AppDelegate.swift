@@ -8,6 +8,21 @@
 
 import UIKit
 
+import ReSwift
+import RxSwift
+
+var store: Store<UndoState>!
+
+var dispatchObserver: AnyObserver<Action> = AnyObserver.init { event in
+    
+    switch event {
+    case .next(let element):
+        store.dispatch(element)
+    default:
+        fatalError()
+    }
+    
+}
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,6 +30,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
+        store = Store(
+            reducer: undoReducer(reducer: rootReducer),
+            state: UndoContainer.init(past: [], future: [], present: AppState())
+        )
         
         window = UIWindow.init(frame: UIScreen.main.bounds)
         
