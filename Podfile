@@ -6,7 +6,7 @@ xcodeproj './PathDraw.xcodeproj'
 
 
 target 'PathDraw' do
-   pod 'RxFeedback'
+   
    pod 'RxSwiftExt'
    pod 'ReSwift'
    use_frameworks!
